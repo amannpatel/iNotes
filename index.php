@@ -13,6 +13,22 @@ if ($conn) {
 } else {
     die("Database connection failed: " . mysqli_connect_error());
 }
+
+$insert = false;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $title = $_POST['title'];
+    $description = $_POST['description'];
+
+    $sql = "INSERT INTO `notes` (`title`, `description`) VALUES ('$title','$description')";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result) {
+        // echo "The record has been inserted successfully!";
+        $insert = true;
+    } else {
+        echo "Error in inserting records----->" . mysqli_connect_errno($conn);
+    }
+}
 ?>
 
 <!doctype html>
@@ -62,15 +78,15 @@ if ($conn) {
     <!-- MAIN CONTENT -->
     <div class="container my-4">
         <h2>Add a Note</h2>
-        <form>
+        <form action="/INOTES/index.php" method="post">
             <div class="mb-3">
                 <label for="title">Note Title</label>
                 <input type="text" class="form-control" id="title" name="title" aria-describedby="emailHelp">
             </div>
 
             <div class="mb-3">
-                <label for="desc" class="form-label">Note Description</label>
-                <textarea class="form-control" id="desc" name="desc" rows="5"></textarea>
+                <label for="description" class="form-label">Note Description</label>
+                <textarea class="form-control" id="description" name="description" rows="5"></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">Add Note</button>
@@ -80,14 +96,31 @@ if ($conn) {
 
     <!-- FORM DATA -->
     <div class="container">
-        <?php
-        $sql = "SELECT * from notes";
-        $result = mysqli_query($conn, $sql);
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo $row['sno'] . "Title " . $row['title'] . "Desc is " . $row['description'];
-            echo "<br>";
-        }
-        ?>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">S.No</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $sql = 'SELECT * from notes';
+                $result = mysqli_query($conn, $sql);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<tr>
+                    <th scope='row'>" . $row['sno'] . "</th> 
+                    <td>" . $row['title'] . "</td>
+                    <td>" . $row['description'] . "</td>
+                    <td>Actions</td>
+                </tr>";
+                }
+                ?>
+            </tbody>
+        </table>
     </div>
     <!-- FORM DATA ENDS -->
 
